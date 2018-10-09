@@ -28,7 +28,34 @@ class Task():
 
     def get_reward(self):
         """Uses current pose of sim to return reward."""
-        reward = 1.-.3*(abs(self.sim.pose[:3] - self.target_pos)).sum()
+        self.x_dist_squared = (self.sim.pose[0] - self.target_pos[0])**2
+        self.y_dist_squared = (self.sim.pose[1] - self.target_pos[1])**2
+        self.z_dist_squared = (self.sim.pose[2] - self.target_pos[2])**2
+        self.total_dist = np.sqrt(self.x_dist_squared + self.y_dist_squared + self.z_dist_squared)
+        reward = 1
+
+        #reward -= self.total_dist
+        #reward -= np.sum(np.absolute(self.sim.pose[:2])) + np.sum(np.absolute(self.sim.pose[3:]))
+        #reward -= np.sum(np.absolute(self.sim.v)) * 0.1
+        #reward -= np.sum(np.absolute(self.sim.linear_accel)) * 0.1
+        #reward -= np.sum(np.absolute(self.sim.angular_v))
+        #reward -= np.sum(np.absolute(self.sim.angular_accels))
+        #reward += np.sum(self.sim.prop_wind_speed)
+        #reward += (2.5 - self.total_dist) * 10
+        reward += self.sim.time*5
+
+        '''
+        print("Reward", reward)
+        print(np.sum([abs(thing) for thing in self.sim.v]), np.sum([abs(thing) for thing in self.sim.angular_v]), np.sum([abs(thing) for thing in self.sim.angular_accels]), (2.5 - self.total_dist) * 5)
+        print("Time",self.sim.time)
+        print("Position",self.sim.pose)
+        print("Velocity",self.sim.v)
+        print("Angular Velocity",self.sim.angular_v)
+        print("Linear Acceleration",self.sim.linear_accel)
+        print("Angular Acceleration",self.sim.angular_accels)
+        print("Prop Wind Speed",self.sim.prop_wind_speed)
+        print()
+        '''
         return reward
 
     def step(self, rotor_speeds):
