@@ -1,13 +1,9 @@
-from actor import Actor
-from critic import Critic
-from replay_buffer import ReplayBuffer
-from ou_noise import OUNoise
 import numpy as np
 
 class DDPG():
     """Reinforcement Learning agent that learns using DDPG."""
 
-    def __init__(self, task):
+    def __init__(self, task, Actor, Critic, ReplayBuffer, OUNoise):
         self.task = task
         self.state_size = task.state_size
         self.action_size = task.action_size
@@ -34,7 +30,7 @@ class DDPG():
 
         # Replay memory
         self.buffer_size = 10000000
-        self.batch_size = 58
+        self.batch_size = 256
         self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
 
         # Algorithm parameters

@@ -24,7 +24,7 @@ class Task():
         self.action_size = 4
 
         # Goal
-        self.target_pos = target_pos if target_pos is not None else np.array([0., 0., 10.]) 
+        self.target_pos = target_pos if target_pos is not None else np.array([5., 5., 5.])
 
     def get_reward(self, rotor_speeds):
         """Uses current pose of sim to return reward."""
@@ -34,35 +34,13 @@ class Task():
         self.total_dist = np.sqrt(self.x_dist_squared + self.y_dist_squared + self.z_dist_squared)
         reward = 5
 
-        #reward -= self.total_dist
-        #reward -= np.sum(np.absolute(self.sim.pose[:2])) + np.sum(np.absolute(self.sim.pose[3:]))
-        #reward -= np.sum(np.absolute(self.sim.v))
-        #reward -= np.sum(np.absolute(self.sim.linear_accel)) * 3.0
-        #reward -= np.sum(np.absolute(self.sim.angular_v)) * 3.0
-        #reward -= np.sum(np.absolute(self.sim.angular_accels)) * 3.0
-        #reward += np.sum(self.sim.prop_wind_speed)
-        #reward += (2.5 - self.total_dist) * 10
-        #reward += self.sim.time * 5
-
         self.std = np.std(rotor_speeds)
 
-        #reward -= self.std / 20.0
+        reward -= self.std / 1
         '''
-        if self.std <= 5:
-            reward += 50
-
-        #print(np.std(rotor_speeds), rotor_speeds)
-
-        #reward -= abs(self.sim.v[2]) * 10.0
-
-        
-        if abs(self.sim.v[2]) >= 1:
-            reward -= abs(self.sim.v[2]) * 30
-        '''
-
         if self.sim.pose[4] >= 0.3:
             reward -= self.sim.pose[4] * 10
-
+        '''
         if self.sim.pose[5] >= 0.3:
             reward -= self.sim.pose[5] * 10
         
@@ -71,47 +49,7 @@ class Task():
         
         if self.sim.pose[2] >= 2.5 and self.sim.pose[2] <= 7.5:
             reward += 20
-        '''
-        if self.sim.pose[2] <= 2.5:
-            reward -= 40
-        
-        if self.sim.pose[2] <= 1:
-            reward -= 100
-        '''
-        if self.sim.prop_wind_speed[0] <= 0:
-            reward -= 5
-        else:
-            reward += 5
 
-        if self.sim.prop_wind_speed[1] <= 0:
-            reward -= 5
-        else:
-            reward += 5
-
-        if self.sim.prop_wind_speed[2] <= 0:
-            reward -= 5
-        else:
-            reward += 5
-
-        if self.sim.prop_wind_speed[3] <= 0:
-            reward -= 5
-        else:
-            reward += 5
-        
-        
-        #print(reward, self.sim.pose)
-        '''
-        print("Reward", reward)
-        print(np.sum([abs(thing) for thing in self.sim.v]), np.sum([abs(thing) for thing in self.sim.angular_v]), np.sum([abs(thing) for thing in self.sim.angular_accels]), (2.5 - self.total_dist) * 5)
-        print("Time",self.sim.time)
-        print("Position",self.sim.pose)
-        print("Velocity",self.sim.v)
-        print("Angular Velocity",self.sim.angular_v)
-        print("Linear Acceleration",self.sim.linear_accel)
-        print("Angular Acceleration",self.sim.angular_accels)
-        print("Prop Wind Speed",self.sim.prop_wind_speed)
-        print()
-        '''
         return reward
 
     def step(self, rotor_speeds):
